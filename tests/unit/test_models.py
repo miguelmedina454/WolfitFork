@@ -147,4 +147,10 @@ def test_posts_can_be_just_links_without_body(test_db, test_user):
     new_post = Post(title=title, link=True, url="http://wou.edu")
     assert new_post.link
 
-
+def test_comments_can_be_down_voted_on(test_db, test_user, single_post_with_comment):
+    comment = single_post_with_comment.comments[0]
+    new_user = User(username="robot", email="robot@gmail.com")
+    db.session.add(new_user)
+    db.session.commit()
+    comment.down_vote(new_user)
+    assert comment.vote_count == 0
