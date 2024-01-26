@@ -154,3 +154,12 @@ def test_comments_can_be_down_voted_on(test_db, test_user, single_post_with_comm
     db.session.commit()
     comment.down_vote(new_user)
     assert comment.vote_count == 0
+
+def test_post_vote_count_goes_down_after_down_voting(test_db, test_user, single_post):
+    assert single_post.vote_count == 0
+    single_post.up_vote(test_user)
+    new_user = User(username="robot_2", email="robot_2@gmail.com")
+    db.session.add(new_user)
+    db.session.commit()
+    single_post.down_vote(new_user)
+    assert single_post.vote_count == 0
