@@ -10,4 +10,5 @@ def test_yesterday():
 def test_today_just_now():
     assert (pretty_date(datetime.utcnow())) ==  "just now"
 
-def 
+def test_days_ago():
+    assert (pretty_date(datetime.utcnow() - timedelta(days=5))) == "5 days ago"
