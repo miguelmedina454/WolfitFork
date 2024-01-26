@@ -21,3 +21,6 @@ def test_months_ago():
 
 def test_years_ago():
     assert (pretty_date(datetime.utcnow() - timedelta(days=380))) == "1 years ago"
+
+def test_seconds_ago():
+    assert (pretty_date(datetime.utcnow() - timedelta(seconds=10))) == "10 seconds ago"
