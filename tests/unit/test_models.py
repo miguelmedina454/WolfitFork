@@ -1,6 +1,6 @@
 import textwrap
-from datetime import timedelta
-
+from datetime import timedelta, datetime
+from app.helpers import pretty_date
 from app import db
 from app.models import Category, Post, User
 
@@ -146,4 +146,5 @@ def test_posts_can_be_just_links_without_body(test_db, test_user):
     title = "Link post"
     new_post = Post(title=title, link=True, url="http://wou.edu")
     assert new_post.link
+
 
