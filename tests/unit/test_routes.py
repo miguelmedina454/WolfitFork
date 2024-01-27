@@ -297,3 +297,10 @@ def test_link_posts_should_have_link_to_url(client, test_user):
     db.session.commit()
     response = client.get(url_for("post", post_id=link_post.id))
     assert link_post.url.encode() in response.data
+
+def test_if_logged_in_user_can_up_vote_post(client, test_user, single_post):
+    login(client, test_user.username, PASSWORD)
+    up_vote_link = url_for("up_vote", post_id=single_post.id, _external=False)
+    response = client.get(up_vote_link)
+    assert response.status_code == 302
+    
