@@ -1,2 +1,2 @@
-SECRET_KEY="f4CwPHFbP7"
+SECRET_KEY="f4CwPHFbP"
 BLOG_DATABASE_NAME = 'wolfit_test.db'

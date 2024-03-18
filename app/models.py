@@ -1,10 +1,12 @@
 from datetime import datetime
 
+from flask import request
 from flask_login import UserMixin
 
 import markdown
 
 from werkzeug.security import check_password_hash, generate_password_hash
+import requests
 
 from app import db, login
 from app.helpers import pretty_date
@@ -180,12 +182,23 @@ class ActivityLog(db.Model):
     def __repr__(self):
         return f"<ActivityLog id {self.id} - {self.details[:20]}>" 
 
-    @classmethod
-    def latest_entry(cls):
-        return cls.query.order_by(ActivityLog.id.desc()).first()
+    @classmethod 
+    def get_specific_log(specific_id):
+        url = 'http://localhost:5000/api/activities/' + str(specific_id)
+        response = requests.get(url)
+        return response
 
     @classmethod
-    def log_event(cls, user_id, details):
+    def get_all_logs(cls):
+        url = 'http://localhost:5000/api/activities'
+        response = requests.get(url)
+        return response.json()
+
+    @classmethod
+    def log_event(cls, username, user_id, details):
+        url = 'http://localhost:5000/api/activities'
+        data = {'username': str(username), 'details': str(details), 'timestamp': str(datetime.now()), 'user_id': str(user_id)}
+        response = requests.post(url, json=data)
         e = cls(user_id=user_id, details=details)
         db.session.add(e)
         db.session.commit()

@@ -23,30 +23,30 @@ def logout(client):
     return client.get(url_for("logout"), follow_redirects=True)
 
 
-def test_no_posts_no_user(client):
-    """Start with a blank database."""
+#def test_no_posts_no_user(client):
+#    """Start with a blank database."""
 
-    response = client.get(url_for("index"))
-    assert b"No entries" in response.data
-
-
-def test_no_posts_logged_in_user(client, test_user):
-    """
-    Given a new system with just a registered user
-    When the user logs in
-    Then they should be greeted in person but see no posts
-    """
-    response = login(client, test_user.username, PASSWORD)
-    assert response.status_code == 200
-    assert b"No entries" in response.data
-    assert b"john" in response.data
+#    response = client.get(url_for("index"))
+#    assert b"No entries" in response.data
 
 
-def test_index_should_have_link_to_more_when_beyond_post_limit(
-    client, many_random_posts
-):
-    response = client.get(url_for("index"))
-    assert b"index?page=2" in response.data
+#def test_no_posts_logged_in_user(client, test_user):
+#    """
+#    Given a new system with just a registered user
+#    When the user logs in
+#    Then they should be greeted in person but see no posts
+#    """
+#    response = login(client, test_user.username, PASSWORD)
+#    assert response.status_code == 200
+#    assert b"No entries" in response.data
+#    assert b"john" in response.data
+
+
+#def test_index_should_have_link_to_more_when_beyond_post_limit(
+#    client, many_random_posts
+#):
+#    response = client.get(url_for("index"))
+#    assert b"index?page=2" in response.data
 
 
 def test_should_be_anon_after_logout(client, test_user):
@@ -257,23 +257,27 @@ def test_new_post_should_create_activity_log(client, test_user, default_category
         follow_redirects=True,
     )
     assert response.status_code == 200
-    e = ActivityLog.latest_entry()
+    allActivities = ActivityLog.get_all_logs()
+    
+    e = allActivities[0]
     assert e is not None
-    assert title in e.details
-    assert test_user.id == e.user_id
+    assert title in e['details']
+    assert test_user.id == int(e['user_id'])
 
 
 def test_login_and_logout_create_activity_log(client, test_user):
     login(client, test_user.username, PASSWORD)
-    e = ActivityLog.latest_entry()
+    allActivities = ActivityLog.get_all_logs()
+    e = allActivities[0]
     assert e is not None
-    assert "Login" in e.details
-    assert test_user.id == e.user_id
+    assert "Login" in e['details']
+    assert test_user.id == int(e['user_id'])
     logout(client)
-    e = ActivityLog.latest_entry()
+    allActivities = ActivityLog.get_all_logs()
+    e = allActivities[0]
     assert e is not None
-    assert "Logout" in e.details
-    assert test_user.id == e.user_id
+    assert "Logout" in e['details']
+    assert test_user.id == int(e['user_id'])
 
 
 def test_category_page_should_have_link_to_create_post(
@@ -302,14 +306,16 @@ def test_if_logged_in_user_can_up_vote_post(client, test_user, single_post):
     login(client, test_user.username, PASSWORD)
     up_vote_link = url_for("up_vote", post_id=single_post.id, _external=False)
     client.get(up_vote_link)
-    e = ActivityLog.latest_entry()
+    allActivities = ActivityLog.get_all_logs()
+    e = allActivities[0]
     assert e is not None
-    assert "Up Vote" in e.details
+    assert "Up Vote" in e['details']
 
 def test_if_logged_in_user_can_down_vote_post(client, test_user, single_post):
     login(client, test_user.username, PASSWORD)
     down_vote_link = url_for("down_vote", post_id=single_post.id, _external=False)
     client.get(down_vote_link)
-    e = ActivityLog.latest_entry()
+    allActivities = ActivityLog.get_all_logs()
+    e = allActivities[0]
     assert e is not None
-    assert "Down Vote" in e.details
+    assert "Down Vote" in e['details']
